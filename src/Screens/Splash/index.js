@@ -8,18 +8,12 @@ const SplashScreen = ({navigation}) => {
   React.useEffect(() => {
     const timer = setTimeout(() => {
       navigation.navigate('OnBoarding');
-    }, 3000);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, [navigation]);
 
   return (
-    // <LinearGradient  colors={['#800080', '#0000FF']} height={'100%'}>
-    //   <View style={{alignItems: 'center', flex: 1, justifyContent: 'center'}}>
-    //     <Text style = {{color : 'white', fontSize : 19}}>Food Delivery</Text>
-    //   </View>
-    // </LinearGradient>
-
     <LottleAnimation source={LottleSource.Spinner} />
   );
 };

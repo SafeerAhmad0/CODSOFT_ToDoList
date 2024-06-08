@@ -1,14 +1,21 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import {StyleSheet, Text, View} from 'react-native';
+import React from 'react';
 
-const OnBoarding = () => {
+const OnBoarding = ({navigation}) => {
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      navigation.navigate('Home');
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [navigation]);
   return (
-    <View>
-      <Text>OnBoarding</Text>
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Text>ToDoList</Text>
     </View>
-  )
-}
+  );
+};
 
-export default OnBoarding
+export default OnBoarding;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

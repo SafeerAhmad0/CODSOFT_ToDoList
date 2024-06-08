@@ -1,41 +1,80 @@
 import * as React from 'react';
 import {Button, Text, TouchableOpacity, View} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
 import 'react-native-gesture-handler';
-import SplashScreen from './src/Screens/Splash';
-import OnBoarding from './src/Screens/OnBoarding';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {svgFiles} from './src/Assests/source';
+import {svgFiles} from '../../Assests/source';
+import CurrentTask from '../CurrentTasks';
+import Tasks from '../Tasks';
+import {heightRatio, widthRatio} from '../../Components/screenSize';
+import AntDesign from '../../Components/VectorIcons';
 
 const Tab = createBottomTabNavigator();
 
 const dataSet = {
-  'Icon' : svgFiles,
+  Icon: svgFiles,
 };
 
-export default function App() {
+export default function HomePage() {
   const CustomTabBar = ({state, descriptors, navigation}) => {
     return (
-      <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
-        <TouchableOpacity>
-          <Text>Hi</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity>
-          <Text>Hi</Text>
-        </TouchableOpacity>
+      <View style={{backgroundColor : 'lightblue',height : heightRatio(8)}}>
+        <View
+          style={{
+            justifyContent: 'space-between',
+            flexDirection: 'row',
+            width: widthRatio(75),
+            height : heightRatio(8),
+            alignSelf: 'center',
+          }}>
+          <TouchableOpacity
+            onPress={() => {
+              {
+                navigation.navigate('CurrentTask');
+              }
+            }}
+            style={{
+              alignContent: 'center',
+              alignSelf: 'center',
+              width: widthRatio(12),
+              alignItems: 'center',
+            }}>
+            <AntDesign nameIcon={'home'} />
+            <Text>Home</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              {
+                navigation.navigate('Tasks');
+              }
+            }}
+            style={{
+              alignContent: 'center',
+              alignSelf: 'center',
+              width: widthRatio(19),
+              alignItems: 'center',
+            }}>
+            <AntDesign nameIcon={'plus'} />
+            <Text>Add Tasks</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   };
 
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        initialRouteName="Home"
-        tabBar={props => <CustomTabBar {...props} />}>
-        <Tab.Screen name="SplashScreen" component={SplashScreen} />
-        <Tab.Screen name="OnBoarding" component={OnBoarding} />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <Tab.Navigator
+      initialRouteName="Home"
+      tabBar={props => <CustomTabBar {...props} />}>
+      <Tab.Screen
+        name="CurrentTask"
+        component={CurrentTask}
+        options={{headerShown: false}}
+      />
+      <Tab.Screen
+        name="Tasks"
+        component={Tasks}
+        options={{headerShown: false}}
+      />
+    </Tab.Navigator>
   );
 }
