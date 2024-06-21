@@ -1,21 +1,29 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
+import { Text} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 
 const OnBoarding = ({navigation}) => {
-  React.useEffect(() => {
+  useEffect(() => {
     const timer = setTimeout(() => {
       navigation.navigate('Home');
     }, 1000);
 
     return () => clearTimeout(timer);
   }, [navigation]);
+
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>ToDoList</Text>
-    </View>
+    <LinearGradient
+      colors={['lavender', 'lightblue']}
+      style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Text
+        style={{
+          color: '#fff',
+          fontSize: 35,
+        }}>
+        ToDoList
+      </Text>
+    </LinearGradient>
   );
 };
 
 export default OnBoarding;
-
-const styles = StyleSheet.create({});

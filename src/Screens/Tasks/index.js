@@ -13,11 +13,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {heightRatio, widthRatio} from '../../Components/screenSize';
 import AntDesign from '../../Components/VectorIcons';
 import {Calendar} from 'react-native-calendars';
-import ProgressBar from 'react-native-progress/Bar';
+import LinearGradient from 'react-native-linear-gradient';
+import {useNavigation} from '@react-navigation/native';
 
 const STORAGE_KEY = '@todo-list';
 
 const TodoList = () => {
+  const [addTaskModal, setAddTaskModal] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [inputText, setInputText] = useState('');
   const [descriptionText, setDescriptionText] = useState('');
@@ -40,6 +42,19 @@ const TodoList = () => {
     };
     loadTasks();
   }, []);
+  const navigation = useNavigation();
+
+  const [data, setData] = React.useState(null);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setData('Refreshed data!');
+
+      console.log('Screen refreshed!');
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   const addTask = async (newTask, data, due) => {
     if (newTask.trim()) {
@@ -143,97 +158,109 @@ const TodoList = () => {
 
   return (
     <>
+      <Text style={{top: 20, textAlign: 'center', fontSize: 25}}>
+        Active / Completed Tasks
+      </Text>
+      <Text style={{textAlign: 'center', fontSize: 20, top: 3}}>
+        ____________________________________
+      </Text>
       <FlatList
         data={tasks}
         renderItem={({item}) => (
           <View style={{top: 20, height: heightRatio(18)}}>
-            <View
+            <LinearGradient
+              colors={['lavender', 'lightblue']}
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                padding: 10,
-                alignContent: 'center',
+                justifyContent: 'center',
+                alignItems: 'center',
                 width: widthRatio(90),
                 alignSelf: 'center',
-                backgroundColor: 'lightblue',
-                height: heightRatio(15),
                 borderRadius: 15,
               }}>
-              <View style={{height: heightRatio(15)}}>
-                <Text style={{color: 'blue'}}>{item.title}</Text>
-                <Text>{item.description}</Text>
-              </View>
               <View
                 style={{
-                  flexDirection: 'column',
-                  width: widthRatio(20),
+                  flexDirection: 'row',
                   justifyContent: 'space-between',
+                  padding: 10,
+                  alignContent: 'center',
+                  width: widthRatio(90),
+                  alignSelf: 'center',
+                  height: heightRatio(15),
+                  borderRadius: 15,
                 }}>
-                <Text>{item.dueDate}</Text>
-                {taskInfo ? <Text>Compeled</Text> : <Text>Pending</Text>}
+                <View style={{height: heightRatio(15)}}>
+                  <Text style={{color: 'blue'}}>{item.title}</Text>
+                  <Text>{item.description}</Text>
+                </View>
                 <View
                   style={{
+                    flexDirection: 'column',
+                    width: widthRatio(22),
                     justifyContent: 'space-between',
-                    flexDirection: 'row',
-                    width: widthRatio(25),
-                    right: 12,
                   }}>
-                  <TouchableOpacity onPress={() => startEditing(item)}>
-                    <AntDesign nameIcon={'edit'} />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => deleteTask(item.id)}>
-                    <AntDesign nameIcon={'delete'} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      startEditing2(item);
-                      checkTask(item.completed);
+                  <Text>{item.dueDate}</Text>
+                  {item.completed == '100' ? (
+                    <Text>Compeled</Text>
+                  ) : (
+                    <Text>Active</Text>
+                  )}
+                  <View
+                    style={{
+                      justifyContent: 'space-between',
+                      flexDirection: 'row',
+                      width: widthRatio(25),
+                      right: 10,
                     }}>
-                    <AntDesign nameIcon={'info'} />
-                  </TouchableOpacity>
+                    <TouchableOpacity onPress={() => startEditing(item)}>
+                      <AntDesign nameIcon={'edit'} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => deleteTask(item.id)}
+                      style={{left: 4.5}}>
+                      <AntDesign nameIcon={'delete'} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        startEditing2(item);
+                        checkTask(item.completed);
+                      }}>
+                      <AntDesign nameIcon={'info'} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
-            </View>
+            </LinearGradient>
           </View>
         )}
         keyExtractor={item => item.id.toString()}
       />
-      <View
-        style={{
-          justifyContent: 'space-between',
-          flexDirection: 'row',
-          width: widthRatio(90),
-          alignItems: 'center',
-        }}>
-        <View>
-          <TextInput
-            style={styles.input}
-            placeholder="Add a new task..."
-            value={inputText}
-            onChangeText={text => setInputText(text)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Add a description..."
-            value={descriptionText}
-            onChangeText={text => setDescriptionText(text)}
-          />
-          <TouchableOpacity onPress={() => setCalendarVisible(true)}>
-            <Text>Select Due Date</Text>
-          </TouchableOpacity>
-          {dueDate && <Text>Due Date: {dueDate}</Text>}
-        </View>
-        {inputText !== '' && (
+      <View style={{alignItems: 'center', height: heightRatio(8)}}>
+        <LinearGradient
+          colors={['lavender', 'lightblue']}
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: widthRatio(50),
+            borderRadius: 25,
+            top: 5,
+          }}>
           <TouchableOpacity
-            onPress={
-              editingTask
-                ? saveTask
-                : () => addTask(inputText, descriptionText, dueDate)
-            }>
-            <AntDesign nameIcon={'check'} />
+            onPress={() => setAddTaskModal(true)}
+            style={{
+              justifyContent: 'space-between',
+              flexDirection: 'row',
+              alignItems: 'center',
+              width: widthRatio(28),
+              padding: 10,
+            }}>
+            <Text style={{color: 'black', fontSize: 16}}>Add Task</Text>
+            <View style={{left: 3}}>
+              <AntDesign nameIcon={'plus'} colorIcon={'black'} />
+            </View>
           </TouchableOpacity>
-        )}
+        </LinearGradient>
       </View>
+
       <Modal
         visible={modalTask}
         animationType="slide"
@@ -275,8 +302,8 @@ const TodoList = () => {
                       justifyContent: 'center',
                       borderColor:
                         currentIdInfo == '0' || currentIdInfo > 0
-                          ? 'red'
-                          : 'blue',
+                          ? 'blue'
+                          : 'red',
                     }}>
                     <Text>0%</Text>
                   </View>
@@ -293,8 +320,8 @@ const TodoList = () => {
                       justifyContent: 'center',
                       borderColor:
                         currentIdInfo == '0' || currentIdInfo >= 25
-                          ? 'red'
-                          : 'blue',
+                          ? 'blue'
+                          : 'red',
                     }}>
                     <Text>25%</Text>
                   </View>
@@ -309,7 +336,7 @@ const TodoList = () => {
                       height: 35,
                       alignItems: 'center',
                       justifyContent: 'center',
-                      borderColor: currentIdInfo >= 50 ? 'red' : 'blue',
+                      borderColor: currentIdInfo >= 50 ? 'blue' : 'red',
                     }}>
                     <Text>50%</Text>
                   </View>
@@ -326,8 +353,8 @@ const TodoList = () => {
                       justifyContent: 'center',
                       borderColor:
                         currentIdInfo == '0' || currentIdInfo >= 75
-                          ? 'red'
-                          : 'blue',
+                          ? 'blue'
+                          : 'red',
                     }}>
                     <Text>75%</Text>
                   </View>
@@ -345,8 +372,8 @@ const TodoList = () => {
                       bottom: 2,
                       borderColor:
                         currentIdInfo == '0' || currentIdInfo >= 100
-                          ? 'red'
-                          : 'blue',
+                          ? 'blue'
+                          : 'red',
                     }}>
                     <Text>100%</Text>
                   </View>
@@ -414,6 +441,94 @@ const TodoList = () => {
             }}
           />
           <Button title="Close" onPress={() => setCalendarVisible(false)} />
+        </View>
+      </Modal>
+
+      <Modal visible={addTaskModal} animationType="slide" transparent={true}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+          }}>
+          <View
+            style={{
+              width: '80%',
+              backgroundColor: 'white',
+              borderRadius: 10,
+              alignItems: 'center',
+              shadowColor: '#000',
+              shadowRadius: 4,
+              elevation: 5,
+              height: heightRatio(30),
+            }}>
+            <View
+              style={{
+                alignContent: 'flex-end',
+                width: widthRatio(70),
+                flexDirection: 'row-reverse',
+                top: 15,
+              }}>
+              <TouchableOpacity
+                onPress={() => setAddTaskModal(false)}
+                style={{
+                  justifyContent: 'space-between',
+                }}>
+                <AntDesign nameIcon={'close'} />
+              </TouchableOpacity>
+            </View>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Add a new task..."
+              value={inputText}
+              onChangeText={text => setInputText(text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Add a description..."
+              value={descriptionText}
+              onChangeText={text => setDescriptionText(text)}
+            />
+            <TouchableOpacity
+              onPress={() => setCalendarVisible(true)}
+              style={{top: 5}}>
+              <Text>Select Due Date</Text>
+            </TouchableOpacity>
+            {dueDate && <Text>Due Date: {dueDate}</Text>}
+
+            {inputText !== '' && (
+              <>
+                <Text>_______________________________</Text>
+                <TouchableOpacity
+                  onPress={
+                    editingTask
+                      ? saveTask
+                      : () => {
+                          addTask(inputText, descriptionText, dueDate);
+                          setAddTaskModal(false);
+                        }
+                  }
+                  style={{
+                    top: 5,
+                    justifyContent: 'space-between',
+                    flexDirection: 'row',
+                    width: widthRatio(25),
+                  }}>
+                  <Text
+                    style={{
+                      color: 'lightblue',
+                    }}>
+                    Add Task
+                  </Text>
+                  <View style={{bottom: 3}}>
+                    <AntDesign nameIcon={'check'} colorIcon={'lightblue'} />
+                  </View>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
         </View>
       </Modal>
     </>

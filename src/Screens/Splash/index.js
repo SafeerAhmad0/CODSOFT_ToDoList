@@ -1,6 +1,4 @@
-import {View, Text} from 'react-native';
 import React from 'react';
-import LinearGradient from 'react-native-linear-gradient';
 import LottleAnimation from '../../Components/LottleAnimations';
 import {LottleSource} from '../../Assests/source';
 
