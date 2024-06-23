@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -14,7 +14,7 @@ import {heightRatio, widthRatio} from '../../Components/screenSize';
 import AntDesign from '../../Components/VectorIcons';
 import {Calendar} from 'react-native-calendars';
 import LinearGradient from 'react-native-linear-gradient';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 
 const STORAGE_KEY = '@todo-list';
 
@@ -31,6 +31,28 @@ const TodoList = () => {
   const [modalTask, setModalTask] = useState(false);
   const [currentIdInfo, setCurrentIdInfo] = useState();
 
+  const navigation = useNavigation();
+
+  const loadTasks = async () => {
+    try {
+      const data = await AsyncStorage.getItem(STORAGE_KEY);
+      setTasks(data ? JSON.parse(data) : []);
+    } catch (error) {
+      console.error('Error loading tasks:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadTasks();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadTasks();
+      console.log('Screen refreshed!');
+    }, [])
+  );
+
   useEffect(() => {
     const loadTasks = async () => {
       try {
@@ -42,7 +64,7 @@ const TodoList = () => {
     };
     loadTasks();
   }, []);
-  const navigation = useNavigation();
+ 
 
   const [data, setData] = React.useState(null);
 
