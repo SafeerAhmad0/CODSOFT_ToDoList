@@ -160,7 +160,7 @@ const CurrentTask = () => {
         data={tasks}
         renderItem={({item}) => (
           <>
-            {item.completed > '100' ? (
+            {item.completed != '100' ? (
               <View style={{top: 20, height: heightRatio(18)}}>
                 <LinearGradient
                   colors={['lavender', 'lightblue']}
